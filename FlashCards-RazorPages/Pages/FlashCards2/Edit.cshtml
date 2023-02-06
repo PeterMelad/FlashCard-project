@@ -1,0 +1,116 @@
+﻿@page
+@model FlashCards_RazorPages.Pages.FlashCards2.EditModel
+@Html.AntiForgeryToken()
+
+<div id="head">
+    <div id="error" ref="Error" class="text-danger"> Missing Fields</div>
+    @if (Model.flashCard.SubjectName == "Math")
+    {
+        <div>
+            <form asp-page-handler="math" method="post">
+
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <input type="hidden" class="cardid" ref="Cardid" name="cardid" value="@Model.flashCard.ID" />
+                <input type="number" ref="Chapter1" class="chapt" name="ChapterNumber" asp-for="flashCard.ChapterNumber" />
+                <span asp-validation-for="flashCard.ChapterNumber"></span>
+                <br />
+                <input type="date" ref="Date1" class="datee" asp-for="flashCard.Date" name="Date" />
+                <span asp-validation-for="flashCard.Date"></span>
+                <br />
+                @for (int i = 0; i < Model.flashCard.Questions.Count(); i++)
+                {
+                    <div class="border">
+                        <input type="number" ref="X" class="x" value="@Model.flashCard.Questions.ElementAt(i).x" disabled />
+                        <br />
+                        <input type="text" ref="O" class="o" value="@Model.flashCard.Questions.ElementAt(i).Operator" disabled />
+                        <br />
+                        <input type="number" ref="Y" class="y" value="@Model.flashCard.Questions.ElementAt(i).y" disabled />
+                        <br />
+                        <input type="number" ref="Z" class="z" value="@Model.flashCard.Questions.ElementAt(i).z" disabled />
+                        <input type="button" v-on:click="Delete1(@Model.flashCard.Questions.ElementAt(i).id)" @*onclick="delete1(@Model.flashCard.Questions.ElementAt(i).id)"*@ value="Delete Question" />
+
+                    </div>
+                }
+                <br />
+                <fieldset>
+                    <input type="number" name="x" placeholder="x" ref="X1" class="x1" />
+                    <br />
+                    <input type="text" name="Operator" placeholder="operator" ref="O1" class="o1" />
+                    <br />
+                    <input type="number" name="y" placeholder="y" ref="Y1" class="y1" />
+                    <br />
+                    <input type="number" name="z" placeholder="z" ref="Z1" class="z1" />
+
+                    <input type="submit" name="submit" value="Add" />
+                </fieldset>
+                <br />
+                <br />
+                <input  type="submit" name="submit" value="Submit" />
+            </form>
+        </div>
+    }
+    else
+    {
+        <div>
+            <form asp-page-handler="other" method="post">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <input type="hidden" ref="Cardid2" class="cardid2" name="cardid" value="@Model.flashCard.ID" />
+                <input type="number" ref="Chapter2" class="chapt2" name="ChapterNumber" asp-for="flashCard.ChapterNumber" />
+                <br />
+                <input type="date" ref="Date2" class="datee2" asp-for="flashCard.Date" name="Date" />
+                <br />
+                @for (int i = 0; i < Model.flashCard.Questions.Count(); i++)
+                {
+                    <div class="border">
+                        <input type="text" class="q" value="@Model.flashCard.Questions.ElementAt(i).Question" disabled />
+                        <br />
+                        <input type="text" class="a" value="@Model.flashCard.Questions.ElementAt(i).Answer" disabled />
+                        <input type="button" v-on:click="Delete2(@Model.flashCard.Questions.ElementAt(i).id)" value="Delete Question" />
+
+                    </div>
+                }
+                <br />
+                <div class="form-group">
+                    <input type="text" placeholder="Question" name="Question" ref="q" class="q1" />
+                    <br />
+                    <input type="text" placeholder="Answer" name="Answer" ref="a" class="a1" />
+
+                    <input type="submit" name="submit" value="Add"  />
+                </div>
+                <br />
+                <br />
+                <input class="submit2" type="submit" name="submit" value="Submit" />
+            </form>
+        </div>
+    }
+</div>
+
+<script>
+    new Vue({
+        el: '#head'
+        , data: {}
+        , mounted: function () {
+            this.$refs.Error.style.display = "none";
+        }
+        , methods: {
+            Delete1: function (id) {
+                  var url = "@Model.configuration["baseaddressapi"]" + "api/FlashCard/DeleteSpecificQuestion/" + id;
+                 var token = '@ViewData["token"]'
+                 var redirect = window.location.href;
+                 GenericAxiosfunc(url, 'delete', token, redirect);
+            }
+
+
+            , Delete2: function (id) {
+                var url = "@Model.configuration["baseaddressapi"]" + "api/FlashCard/DeleteSpecificQuestion/" + id;
+                var token = '@ViewData["token"]'
+                 var redirect = window.location.href;
+               GenericAxiosfunc(url, 'delete', token, redirect);
+            }
+        }
+    });
+
+
+</script>
+<script src="~/jquery/AxiosFunc.js"></script>

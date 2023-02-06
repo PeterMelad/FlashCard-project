@@ -1,0 +1,24 @@
+﻿@page
+@model FlashCards_RazorPages.Pages.AccountManagement.RegisterModel
+<h1>Register</h1>
+<br />
+<form class="form-group" method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+    <label asp-for="register.Email"></label>
+    <input type="email" asp-for="register.Email" />
+    <span asp-validation-for="register.Email"></span>
+    <br />
+    <label asp-for="register.info.UserName"></label>
+    <input type="text" asp-for="register.info.UserName" />
+    <span asp-validation-for="register.info.UserName"></span>
+    <br />
+    <label asp-for="register.info.Password"></label>
+    <input type="password" asp-for="register.info.Password" />
+    <span asp-validation-for="register.info.Password"></span>
+    <br />
+    <input type="submit" value="Login" />
+</form>
+
+<br />
+<a asp-page="/AccountManagement/Login">Login</a>
+

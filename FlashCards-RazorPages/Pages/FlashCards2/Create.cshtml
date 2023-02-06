@@ -1,0 +1,226 @@
+﻿@page
+@model FlashCards_RazorPages.Pages.FlashCards2.CreateModel
+@Html.AntiForgeryToken()
+<div id="head">
+    @if (Model.displayedquestions == null || Model.displayedquestions.Count==0)
+    {
+        
+        <div class="form-group">
+            <label>Select Subject</label>
+            <select ref="select" v-on:change="OnSelectChange()">
+                <option value="Math">Math</option>
+                <option value="Science">Science</option>
+            </select>
+        </div>
+    }
+
+
+    <label id="error" ref="Error" class="text-danger"> Missing Fields</label>
+
+    <div id="Math" ref="vMath" class="form-group">
+
+        <form asp-page-handler="math" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <label asp-for="@Model.displayedflashCard.ChapterNumber"></label>
+            @if (Model.displayedflashCard.ChapterNumber > 0)
+            {
+                <input type="number" class="chapter1" name="ChapterNumber" asp-for="@Model.displayedflashCard.ChapterNumber" />
+            }
+            else
+            {
+                <input type="number" class="chapter1" name="ChapterNumber" value="" />
+            }
+            <span asp-validation-for="@Model.displayedflashCard.ChapterNumber"></span>
+            <br />
+            <label asp-for="@Model.displayedflashCard.Date"></label>
+            @if (Model.displayedflashCard.Date != default(DateTime))
+            {
+                <input type="date"  class="date1" name="Date" asp-for="@Model.displayedflashCard.Date" />
+            }
+            else
+            {
+                <input type="date" class="date1" name="Date" />
+            }
+            <span asp-validation-for="@Model.displayedflashCard.Date"></span>
+
+            <br />
+            @if (Model.displayedquestions != null)
+            {
+                <div class="form-group">
+                    @for (int i = 0; i < Model.displayedquestions.Count(); i++)
+                    {
+                        <div class="border">
+                            <input type="number" value="@Model.displayedquestions[i].x" disabled />
+                            <br />
+                            <input type="text" value="@Model.displayedquestions[i].Operator" disabled />
+                            <br />
+                            <input type="number" value="@Model.displayedquestions[i].y" disabled />
+                            <br />
+                            <input type="number" value="@Model.displayedquestions[i].z" disabled />
+
+                        </div>
+                    }
+                </div>
+            }
+            <br />
+            <fieldset>
+
+                <input type="number" v-model="X" name="x" id="x" placeholder="First Number" />
+                <br />
+                <input type="text" v-model="Operator" name="Operator" id="operator" placeholder="operator" />
+                <br />
+                <input type="number" v-model="Y" id="y" name="y" placeholder="Second Number" />
+                <br />
+                <input type="number" v-model="Z" id="z " name="z" placeholder="Answer" />
+                <input type="submit" name="submit" id="add1" class="btn btn-primary" value="Add" @*v-on:click="Add1()"*@ />
+            </fieldset>
+            <!--<input type="submit" name="submit" value="Submit" class="btn btn-primary senddata"--> @*v-on:click="SendData1()"*@ <!--/>-->
+            <input type="submit" name="submit" value="Submit" class="btn btn-primary senddata" @*v-on:click="SendData1()"*@ />
+        </form>
+    </div>
+
+
+    <div id="other" ref="vother" class="form-group">
+        <form asp-page-handler="other" method="post">
+            @*<div asp-validation-summary="All" class="text-danger"></div>*@
+            <label asp-for="@Model.displayedflashCard.ChapterNumber"></label>
+            @if (Model.displayedflashCard.ChapterNumber > 0)
+            {
+                <input type="number" ref="Chapter2" class="chapter2" asp-for="@Model.displayedflashCard.ChapterNumber" name="ChapterNumber" />
+            }
+            else
+            {
+                <input type="number" ref="Chapter2" class="chapter2" name="ChapterNumber" />
+            }
+            <span asp-validation-for="@Model.displayedflashCard.ChapterNumber"></span>
+            <br />
+            <label asp-for="@Model.displayedflashCard.Date"></label>
+            @if (Model.displayedflashCard.Date != default(DateTime))
+            {
+                <input type="date" ref="Date2" class="date2" asp-for="@Model.displayedflashCard.Date" name="Date" />
+            }
+            else
+            {
+                <input type="date" ref="Date2" class="date2" name="Date" />
+            }
+            <span asp-validation-for="@Model.displayedflashCard.Date"></span>
+            <br />
+            @if (Model.displayedquestions != null)
+            {
+                <div class="form-group">
+                    @for (int i = 0; i < Model.displayedquestions.Count(); i++)
+                    {
+                        <div class="border">
+                            <input type="text" value="@Model.displayedquestions[i].Question" disabled />
+                            <br />
+                            <input type="text" value="@Model.displayedquestions[i].Answer" disabled />
+                        </div>
+                    }
+                </div>
+            }
+            <div class="border">
+                <input type="text" v-model="Question" name="Question" class="Question" placeholder="Question" />
+                <br />
+                <input type="text" v-model="Answer" name="Answer" class="answer" placeholder="answer" />
+                <input type="button" name="submit" id="add2" class=" btn btn-primary" value="Add" v-on:click="Add1()" />
+            </div>
+            <input type="button" name="submit" class="btn btn-primary senddata2" value="Submit" v-on:click="SendData1()" />
+        </form>
+    </div>
+</div>
+
+<script>
+    new Vue({
+        el: '#head'
+        , data: {
+            X: ''
+            , Y: ''
+            , Operator: ''
+            , Z: ''
+            , Question: null
+            , Answer: null
+            , CurrentSubject: ''
+        }
+        , mounted: function () {
+            this.$refs.Error.style.display = "none";
+            if ("@Model.displayedsubject" == "Math") {
+                this.$refs.vother.style.display = "none";
+                this.$refs.vMath.style.display="inline-block";
+             }
+             else  {
+                this.$refs.vMath.style.display = "none";
+                this.$refs.vother.style.display = "inline-block";
+            }
+        }
+
+        , methods: {
+            OnSelectChange: function () {
+            this.$refs.Error.style.display = "none";
+
+                if (this.$refs.select.value == "Math") {
+                    this.$refs.vother.style.display = "none";
+                    this.$refs.vMath.style.display = "inline-block";
+                }
+                else {
+                    this.$refs.vMath.style.display = "none";
+                    this.$refs.vother.style.display = "inline-block";
+                }
+            }
+            , Add1: function () {
+                var submit = "Add";
+                var ChapterNumber = this.$refs.Chapter2.value;
+                var Date = this.$refs.Date2.value;
+                if (this.Question == null || this.Answer == null) {
+                    this.$refs.Error.style.display = "block";
+                }
+                else {
+                var dataa = {
+                    Question: this.Question,
+                    Answer: this.Answer
+                };
+                var s = '&submit=' + submit + '&ChapterNumber=' + ChapterNumber + '&Date=' + Date
+                axios.post('?handler=other' + s, dataa,
+                    {
+                        headers: {
+                            "RequestVerificationToken": document.getElementsByName("__RequestVerificationToken")[0].value
+                        }
+                    }).then(response => {
+                        if (response.status == 200) {
+                            location.reload(true);
+                        }
+
+                    });
+                }
+            }
+            , SendData1: function () {
+                var submit = "Submit";
+                var ChapterNumber = this.$refs.Chapter2.value;
+                var Date = this.$refs.Date2.value;
+                if (ChapterNumber == '' || Date == '') {
+                    this.$refs.Error.style.display = "block";
+                }
+                else {
+                var dataa = {
+                    Question: this.Question,
+                    Answer: this.Answer
+                };
+                var s = '&submit=' + submit + '&ChapterNumber=' + ChapterNumber + '&Date=' + Date
+                axios.post('?handler=other' + s, dataa,
+                    {
+                        headers: {
+                            "RequestVerificationToken": document.getElementsByName("__RequestVerificationToken")[0].value
+                        }
+                    }).then(response => {
+                        if (response.status == 200) {
+                            location.href = 'http://localhost:81/FlashCards2/Index';
+                        }
+                    });
+                }
+            }
+        }
+    });
+
+</script>
+
+

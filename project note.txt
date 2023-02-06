@@ -1,0 +1,9 @@
+onion architicture
+Mediator pattern (i used it in RazorPages to call APIs through HTTPClient)
+Repository Pattern (in API controllers)
+API (flascard crud operations)
+Razor Page (ui & validation)
+I used identity in API & flag(session based) in razor page
+jwt (in api)
+Axios (Get Request) => tba2to fe page 'index'
+Axios (Post Request) => tba2to fe page 'Create' fe 'FlashCards2'

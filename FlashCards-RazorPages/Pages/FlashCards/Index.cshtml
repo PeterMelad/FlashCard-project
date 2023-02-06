@@ -1,0 +1,215 @@
+﻿@page
+@model FlashCards_RazorPages.Pages.FlashCards.IndexModel
+
+
+<div id="container">
+    <div class="row">
+
+        <div v-for="d in data">
+            <h1>{{d.subjectName}} - Ch {{d.chapterNumber}} </h1>
+
+
+            <div v-show="d.subjectName=='Math'">
+
+                <div v-for="(question,index) in d.questions">
+                    <div class="col-sm-4">
+                        <div class="flip-card card" v-on:click="cardval=question.z">
+                            <div ref="FlippingCard" class="flip-card-inner col-md" style="cursor: pointer; display:grid;" v-on:click="Dosomething($event)">
+                                <div class="flip-card-front">
+                                    <h3 style="text-align:center"> {{question.x}} {{question.operator}} {{question.y}}</h3>
+                                </div>
+                                <div class="flip-card-back">
+                                    <h3 id="cardval" style="text-align:center">{{question.z}} </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+            </div>
+
+            <div v-show="d.subjectName=='Science'">
+                <div v-for="(question,index) in d.questions">
+
+                    <div class="col-sm-4">
+                        <div class="flip-card card" v-on:click="cardval=question.answer">
+                            <div ref="FlippingCard2" class="flip-card-inner col-md" style="cursor: pointer; display:grid;" v-on:click="Dosomething($event)">
+                                <div class="flip-card-front">
+                                    <h3 style="text-align:center">{{question.question}} </h3>
+                                </div>
+                                <div class="flip-card-back">
+                                    <h3 id="cardval" style="text-align:center">{{question.answer}} </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+    </div>
+    <div id="myModal" ref="WindModel" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <input @*id="uservalue"*@ v-model="useranswer" @*ref="uservaluee"*@ type="text" placeholder="Enter Your Answer" />
+            <button class="checkanswer" v-on:click="checkinganswer()">Check Answer</button>
+        </div>
+    </div>
+    <p>card value: {{cardval}} -- user value:{{useranswer}}</p>
+</div>
+
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .flip-card {
+        background-color: transparent;
+        width: 150px;
+        height: 80px;
+        perspective: 1000px;
+    }
+
+    .flip-card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        transition: transform 0.6s;
+        transform-style: preserve-3d;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        margin: 10px;
+    }
+
+
+
+    .flip-card-front, .flip-card-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+    }
+
+    .flip-card-front {
+        background-color: gray;
+        color: black;
+    }
+
+    .flip-card-back {
+        background-color: gray;
+        color: white;
+        transform: rotateY(180deg);
+    }
+    /*.flip-card:hover .flip-card-inner {*/
+    /*transform: rotateY(180deg);*/
+    /*}*/
+
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content */
+    .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+
+    /* The Close Button */
+    .close {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+</style>
+
+<script>
+    var v = new Vue({
+        el: '#container'
+        , data: {
+            data: []
+            , entrance: false
+            , useranswer: ''
+            , cardval: ''
+            , FlippingCard:''
+        }
+        , mounted: function () {
+            var token = '@ViewData["token"]'
+           // axios.defaults.headers.common['Authorization'] = `Bearer ${@ViewData["token"]}`
+            axios.get('http://localhost:83/api/flashcard').then(resp => {
+                this.data = resp.data;
+            })
+        }
+        , methods: {
+
+            Dosomething: function (event) {
+                this.useranswer = '';
+                this.$refs.WindModel.style.display = "block";
+               // $('.flip-card-inner').click(function () {
+                   // x = $(this);
+                   // $('.checkanswer').click(function () {
+
+                  //  })
+                //})
+
+            }
+            , checkinganswer: function () {
+                console.log(this.useranswer)
+                console.log(this.cardval)
+               // toastr.success("IN");
+
+                var modal = document.getElementById("myModal");
+                if (this.useranswer == this.cardval) {
+                   // toastr.success("Correct Answer");
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Correct Answer'
+                    });
+                }
+                else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Incorrect Answer'
+                    });
+                }
+                modal.style.display = "none";
+               // x.css("transform", "rotateY(180deg)");
+            }
+        }
+    });
+
+    var modal = document.getElementById("myModal");
+    var span = document.getElementsByClassName("close")[0];
+    span.onclick = function () {
+        modal.style.display = "none";
+    }
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+</script>

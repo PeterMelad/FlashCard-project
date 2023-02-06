@@ -1,0 +1,289 @@
+﻿@page
+@model FlashCards_RazorPages.Pages.FlashCards2.IndexModel
+
+<a asp-page="/FlashCards2/Create">Create New Card</a>
+<br />
+<br />
+<div id="Main">
+    <div class="form-group">
+        <label>Select Subject</label>
+        <select ref="Select" v-on:change="OnSelectChange()">
+            <option value="Math">Math</option>
+            <option value="Science">Science</option>
+        </select>
+    </div>
+
+
+    <div id="Math" ref="Math">
+        <table class="table table-bordered table-responsive">
+            <thead>
+                <tr>
+                    <td>Chapter Number</td>
+                    <td>Date</td>
+                    <td>Question</td>
+                    <td>Result</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.flashCards)
+                {
+                    if (item.SubjectName == "Math")
+                    {
+                        if (item.Questions.Count() == 0)
+                        {
+                            <tr>
+                                <td>@item.ChapterNumber</td>
+                                <td>@item.Date</td>
+
+                                <td></td>
+                                <td></td>
+
+                                <td>  <a asp-page="/FlashCards2/Edit" asp-route-id="@item.ID" class="btn btn-primary">Edit</a></td>
+                                <td>
+
+                                    <button v-on:click="showmodal(@item.ID)" class="btn btn-primary" @*data-toggle="modal" data-target="#exampleModal"*@>
+                                        Delete
+                                    </button>
+                                </td>
+
+                            </tr>
+                        }
+                        bool first = true;
+                        foreach (var subitem in item.Questions)
+                        {
+                            <tr>
+                                <td>@item.ChapterNumber</td>
+                                <td>@item.Date</td>
+
+                                <td>@subitem.x @subitem.Operator @subitem.y</td>
+                                <td>@subitem.z</td>
+                                @if (first)
+                                {
+                                    <td>  <a asp-page="/FlashCards2/Edit" asp-route-id="@item.ID" class="btn btn-primary">Edit</a></td>
+                                    first = false;
+                                    <td>
+                                        <button type="button" v-on:click="showmodal(@item.ID)" @*onclick="beforedel(@item.ID)"*@ class="btn btn-primary" @*data-toggle="modal" data-target="#exampleModal"*@>
+                                            Delete
+                                        </button>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div id="other" ref="other">
+        <table class="table table-bordered table-responsive">
+            <thead>
+                <tr>
+                    <td>Chapter Number</td>
+                    <td>Date</td>
+                    <td>Question</td>
+                    <td>Result</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.flashCards)
+                {
+
+                    if (item.SubjectName == "Science")
+                    {
+                        if (item.Questions.Count() == 0)
+                        {
+                            <tr>
+                                <td>@item.ChapterNumber</td>
+                                <td>@item.Date</td>
+
+                                <td></td>
+                                <td></td>
+                                <td>  <a asp-page="/FlashCards2/Edit" asp-route-id="@item.ID" class="btn btn-primary">Edit</a></td>
+                                <td>
+                                    <button type="button" v-on:click="showmodal(@item.ID)" @*v-on:click="delId=@item.ID"*@ @*onclick="beforedel(@item.ID)"*@ class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                        bool first = true;
+                        foreach (var subitem in item.Questions)
+                        {
+                            <tr>
+                                <td>@item.ChapterNumber</td>
+                                <td>@item.Date</td>
+
+                                <td>@subitem.Question</td>
+                                <td>@subitem.Answer</td>
+                                @if (first)
+                                {
+                                    first = false;
+                                    <td>  <a asp-page="/FlashCards2/Edit" asp-route-id="@item.ID" class="btn btn-primary">Edit</a></td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" v-on:click="showmodal(@item.ID)" @*v-on:click="delId=@item.ID"*@ @*onclick="beforedel(@item.ID)"*@>
+                                            Delete
+                                        </button>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @*<div id="id01" class="modal">*@
+        <div id="id01" class="modal modal-content" >
+            <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+            <div class="container">
+                <h1>Delete Account</h1>
+                <p>Are you sure you want to delete your account?</p>
+
+                <div class="clearfix">
+                    <button type="button" onclick="document.getElementById('id01').style.display='none' " class="cancelbtn">Cancel</button>
+                    <button type="button" v-on:click="Ondel()" class="deletebtn">Delete</button>
+                </div>
+            </div>
+        </div>
+    @*</div>*@
+</div>
+
+<script>
+
+    window.onclick = function (event) {
+    var modal = document.getElementById('id01');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+   var v= new Vue({
+        el: '#Main'
+       , data: {
+           delId: 0
+       }
+        , mounted: function () {
+            this.$refs.other.style.display = "none";
+            this.$refs.Math.style.display = "block";
+        }
+        , methods: {
+            OnSelectChange: function () {
+                if (this.$refs.Select.value == "Math") {
+                    this.$refs.other.style.display = "none";
+                    this.$refs.Math.style.display = "block";
+                }
+                else {
+                    this.$refs.Math.style.display = "none";
+                    this.$refs.other.style.display = "block";
+                }
+            }
+            , Ondel: function () {
+                console.log(delId);
+                var url = "@Model.configuration["baseaddressapi"]" + 'api/FlashCard/' + delId;
+              var token = '@ViewData["token"]'
+              var redirect = "@Model.configuration["baseaddress"]" + "FlashCards2/Index";
+              GenericAxiosfunc(url, 'delete', token, redirect);
+            }
+            , showmodal: function (id) {
+                delId = id;
+                document.getElementById('id01').style.display = 'block'
+            }
+          
+        }
+    });
+
+</script>
+<style>
+    /** {box-sizing: border-box}*/
+
+/* Set a style for all buttons */
+button {
+  background-color: #04AA6D;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  opacity: 0.9;
+}
+
+button:hover {
+  opacity:1;
+}
+
+/* Float cancel and delete buttons and add an equal width */
+.cancelbtn, .deletebtn {
+  float: left;
+  width: 50%;
+}
+
+/* Add a color to the cancel button */
+.cancelbtn {
+  background-color: #ccc;
+  color: black;
+}
+
+/* Add a color to the delete button */
+.deletebtn {
+  background-color: #f44336;
+}
+
+/* Add padding and center-align text to the container */
+.container {
+  padding: 16px;
+  text-align: center;
+}
+
+/* The Modal (background) */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 60px;
+        top: 0;
+        width: 30%; /* Full width */
+        height: 40%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: #474e5d;
+        padding-top: 50px;
+
+    }
+
+/* Modal Content/Box */
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+        border: 1px solid #888;
+        width: 50%; /* Could be more or less, depending on screen size */
+
+    }
+
+/* Style the horizontal ruler */
+/*hr {
+  border: 1px solid #f1f1f1;
+  margin-bottom: 25px;
+}*/
+
+/* The Modal Close Button (x) */
+.close {
+  top: 15px;
+font-size: 40px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #f44336;
+  cursor: pointer;
+}
+
+/* Clear floats */
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+</style>
